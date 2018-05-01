@@ -1,5 +1,5 @@
 function onReady(){
-  let toDos = [];
+  let toDos = JSON.parse(localStorage.getItem("to-do-app")) || [];
   const addToDoForm = document.getElementById('addToDoForm');
   let id = toDos.length || 0;
 
@@ -22,6 +22,8 @@ function onReady(){
 
     toDoList.textContent = '';
 
+    localStorage.setItem("to-do-app", JSON.stringify(toDos))
+
     toDos.forEach(function(toDo){
       const newLi = document.createElement('li');
       const checkbox = document.createElement('input');
@@ -29,6 +31,11 @@ function onReady(){
       newLi.id = toDo.id;
       checkbox.type = "checkbox";
       checkbox.checked = toDo.complete;
+      checkbox.addEventListener('change', () => {
+        event.preventDefault();
+        toDo.complete = checkbox.checked;
+        renderTheUI();
+      })
 
       const deleteButton = document.createElement('button');
 
