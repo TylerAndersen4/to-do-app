@@ -1,51 +1,64 @@
-function onReady() {
+function onReady(){
+  let toDos = [];
   const addToDoForm = document.getElementById('addToDoForm');
-  const newToDoText = document.getElementById('newToDoText');
-  const toDoList = document.getElementById('toDoList');
+  let id = toDos.length || 0;
 
-  addToDoForm.addEventListener('submit', () => {
-    event.preventDefault();
+  function createNewToDo(){
+    const newToDoText = document.getElementById('newToDoText');
+    if (!newToDoText.value) { return; }
 
-    // get the Text
-    const title = newToDoText.value; // "max"
+    toDos.push({
+      title: newToDoText.value,
+      complete: false,
+      id: ++id
+    });
+    newToDoText.value = '';
 
-    // create a new li
-    const newLi = document.createElement('li');
+    renderTheUI();
+  }
 
-    //create a new input
-    const checkbox = document.createElement('input');
+  function renderTheUI(){
+    const toDoList = document.getElementById('toDoList');
 
-    //create delete button
-    const button = document.createElement('button');
+    toDoList.textContent = '';
 
-    // set button label
-    button.innerHTML = "delete";
-    button.addEventListener('click', () => {
-      event.preventDefault();
-      button.parentElement.remove();
+    toDos.forEach(function(toDo){
+      const newLi = document.createElement('li');
+      const checkbox = document.createElement('input');
+
+      newLi.id = toDo.id;
+      checkbox.type = "checkbox";
+      checkbox.checked = toDo.complete;
+
+      const deleteButton = document.createElement('button');
+
+      // set button label
+      deleteButton.innerHTML = "delete";
+      deleteButton.addEventListener('click', () => {
+        event.preventDefault();
+        toDos = toDos.filter(function(currentToDo) {
+          return currentToDo.id !== toDo.id
+        })
+        renderTheUI();
+      });
+
+      newLi.textContent = toDo.title;
+
+      toDoList.appendChild(newLi);
+      newLi.appendChild(checkbox);
+      newLi.appendChild(deleteButton);
     });
 
-    // set the input's type to checkbox
-    checkbox.type = "checkbox";
+  }
 
-    //set the title
-    newLi.textContent = title;
-
-    //attach the checkbox to the li
-    newLi.appendChild(checkbox);
-
-    //attach the button to the li
-    newLi.appendChild(button);
-
-    //attach the li to the ul
-    toDoList.appendChild(newLi);
-
-    //empty the input
-    newToDoText.value = '';
+  addToDoForm.addEventListener('submit', event => {
+    event.preventDefault();
+    createNewToDo();
   });
+
+  renderTheUI();
 }
 
 window.onload = function () {
-  alert("The window has loaded");
   onReady();
 };
